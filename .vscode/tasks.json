@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "web:dev",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder:web}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "api:dev",
+      "type": "shell",
+      "command": ".venv\\Scripts\\uvicorn app.main:app --reload",
+      "options": {
+        "cwd": "${workspaceFolder:api}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "scrapers:run",
+      "type": "shell",
+      "command": ".venv\\Scripts\\python jobs/run_all.py",
+      "options": {
+        "cwd": "${workspaceFolder:scrapers}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "folders": [
+    { "name": "web", "path": "apps/web" },
+    { "name": "api", "path": "apps/api" },
+    { "name": "scrapers", "path": "services/scrapers" }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/.next": true,
+      "**/node_modules": true
+    },
+    "editor.formatOnSave": true,
+    "typescript.tsdk": "apps/web/node_modules/typescript/lib",
+    "python.defaultInterpreterPath": "${workspaceFolder:api}/.venv/bin/python"
+  }
+}
