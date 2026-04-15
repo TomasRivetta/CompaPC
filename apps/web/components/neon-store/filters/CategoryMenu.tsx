@@ -1,0 +1,47 @@
+'use client';
+
+import { useState } from 'react';
+
+const CATEGORIES = [
+  { id: 'gpu', name: 'Placas de video', icon: 'videogame_asset', active: true },
+  { id: 'cpu', name: 'Procesadores', icon: 'memory' },
+  { id: 'mobo', name: 'Motherboards', icon: 'settings_input_component' },
+  { id: 'ram', name: 'Memorias RAM', icon: 'sd_card' },
+  { id: 'storage', name: 'Almacenamiento', icon: 'database' },
+  { id: 'peripherals', name: 'Periféricos', icon: 'mouse' },
+];
+
+interface CategoryMenuProps {
+  onItemClick?: () => void;
+}
+
+export function CategoryMenu({ onItemClick }: CategoryMenuProps) {
+  const [active, setActive] = useState('gpu');
+
+  const handleItemClick = (id: string) => {
+    setActive(id);
+    if (onItemClick) onItemClick();
+  };
+
+  return (
+    <div className="flex flex-col py-8 px-6 gap-2">
+      <h3 className="font-body text-xs font-semibold uppercase tracking-widest text-primary mb-4">
+        CATEGORIES
+      </h3>
+      {CATEGORIES.map((category) => (
+        <button
+          key={category.id}
+          onClick={() => handleItemClick(category.id)}
+          className={`flex items-center gap-3 py-3 px-4 rounded-md text-xs font-semibold uppercase tracking-widest transition-all ${
+            active === category.id
+              ? 'text-primary bg-surface-container border-r-2 border-primary'
+              : 'text-white/40 hover:text-white/80 hover:bg-surface-container-low hover:translate-x-1'
+          }`}
+        >
+          <span className="material-symbols-outlined text-sm">{category.icon}</span>
+          {category.name}
+        </button>
+      ))}
+    </div>
+  );
+}
