@@ -15,7 +15,6 @@ def created_url(name: str, id_product: int) -> str:
     product_name = clean_text(name).replace(" ", "_").replace("-", "_")
     return f"{BASE_URL}/producto/{product_name}_{id_product}"
 
-
 def build_lookup(data: list, key_field: str = "id", value_field: str = "nombre") -> dict:
     if not data:
         return {}
