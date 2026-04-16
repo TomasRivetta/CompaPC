@@ -1,17 +1,7 @@
 'use client';
 
+import { Product } from '@/types/neon-store';
 import { ProductCard } from './ProductCard';
-
-interface Product {
-  id: number;
-  name: string;
-  brand: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  status: 'IN_STOCK' | 'NEW_ARRIVAL' | 'LIMITED';
-  alt: string;
-}
 
 interface ProductGridProps {
   products: Product[];
@@ -23,10 +13,10 @@ export function ProductGrid({ products }: ProductGridProps) {
       {products.map((product) => (
         <ProductCard
           key={product.id}
-          {...product}
-          onAddToCart={() => console.log(`Added ${product.name} to cart`)}
+          product={product}
         />
       ))}
     </div>
   );
 }
+

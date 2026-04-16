@@ -16,21 +16,15 @@ export function ProductHeader({
   return (
     <header className="mb-10 flex justify-between items-end">
       <div>
-        <h1 className="text-4xl font-black tracking-tighter text-white mb-2 uppercase italic font-headline">
-          {title}
-        </h1>
-        <p className="text-on-surface-variant text-sm font-body">
-          Mostrando {resultCount} resultados de alto rendimiento
-        </p>
+        <h1 className="text-4xl font-black tracking-tighter text-white mb-2 uppercase italic">{title}</h1>
+        <p className="text-on-surface-variant text-sm font-body">Mostrando {resultCount} resultados de alto rendimiento</p>
       </div>
       <div className="flex items-center gap-4">
-        <span className="text-[10px] uppercase tracking-widest text-white/40 whitespace-nowrap">
-          Ordenar por
-        </span>
-        <select
+        <span className="text-[10px] uppercase tracking-widest text-white/40">Ordenar por</span>
+        <select 
           value={sortBy}
           onChange={(e) => onSortChange(e.target.value)}
-          className="bg-surface-container border-none text-xs text-white rounded px-4 py-2 focus:ring-1 focus:ring-primary outline-none cursor-pointer"
+          className="bg-surface-container border-none text-xs text-white rounded px-4 py-2 focus:ring-1 focus:ring-primary outline-none"
         >
           <option value="newest">Más recientes</option>
           <option value="price-low">Precio: Bajo a Alto</option>
@@ -41,3 +35,4 @@ export function ProductHeader({
     </header>
   );
 }
+

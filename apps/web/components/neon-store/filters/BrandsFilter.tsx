@@ -18,18 +18,18 @@ export function BrandsFilter({ selectedBrands, onBrandsChange }: BrandsFilterPro
 
   return (
     <div className="mb-8 flex flex-col gap-3">
-      <span className="text-[10px] text-white/40 uppercase tracking-widest mb-1 block">
-        Marcas
-      </span>
+      <span className="text-[10px] text-white/40 uppercase tracking-widest mb-1 block">Marcas</span>
       {BRANDS.map((brand) => (
         <label key={brand} className="flex items-center gap-3 cursor-pointer group">
           <input
             type="checkbox"
             checked={selectedBrands.includes(brand)}
             onChange={() => handleBrandChange(brand)}
-            className="rounded-sm bg-surface-container-highest border-none text-primary focus:ring-0 focus:ring-offset-0 cursor-pointer"
+            className="rounded-sm bg-surface-container-highest border-none text-primary focus:ring-0 focus:ring-offset-0"
           />
-          <span className="text-xs text-white/60 group-hover:text-white transition-colors">
+          <span className={`text-xs transition-colors ${
+            selectedBrands.includes(brand) ? 'text-white' : 'text-white/60 group-hover:text-white'
+          }`}>
             {brand}
           </span>
         </label>
@@ -37,3 +37,4 @@ export function BrandsFilter({ selectedBrands, onBrandsChange }: BrandsFilterPro
     </div>
   );
 }
+

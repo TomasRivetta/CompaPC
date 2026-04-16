@@ -13,7 +13,7 @@ export default function NeonStoreLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="bg-surface min-h-screen relative">
+    <div className="bg-[#0e0e0e] min-h-screen relative font-body text-white/80">
       <HeaderNav onMenuClick={() => setIsSidebarOpen(true)} />
       
       {/* Mobile Drawer Overlay */}
@@ -24,12 +24,12 @@ export default function NeonStoreLayout({
         onClick={() => setIsSidebarOpen(false)}
       />
 
-      {/* Main Container using Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-[18rem_1fr] pt-20">
+      {/* Main Structural Layout */}
+      <div className="flex pt-20">
         
-        {/* Sidebar Holder - Sticky on Desktop, Drawer on Mobile */}
+        {/* Sidebar - Fixed on Desktop, Drawer on Mobile */}
         <aside 
-          className={`fixed lg:sticky top-20 left-0 bottom-0 w-72 lg:w-auto h-[calc(100vh-5rem)] bg-surface lg:bg-transparent z-[120] lg:z-auto transition-transform duration-300 lg:translate-x-0 custom-scrollbar overflow-y-auto ${
+          className={`fixed lg:sticky top-20 left-0 bottom-0 w-72 h-[calc(100vh-5rem)] bg-[#0e0e0e] z-[120] lg:z-10 transition-transform duration-300 lg:translate-x-0 ${
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
         >
@@ -37,8 +37,8 @@ export default function NeonStoreLayout({
         </aside>
 
         {/* Content Area */}
-        <div className="min-h-[calc(100vh-5rem)] flex flex-col min-w-0">
-          <main className="flex-1 bg-surface-container-low px-4 sm:px-8 lg:px-12 py-10">
+        <div className="flex-1 flex flex-col min-w-0 bg-[#0e0e0e]">
+          <main className="flex-1 px-4 sm:px-8 lg:px-12 py-10">
             {children}
           </main>
           <Footer />
@@ -47,3 +47,4 @@ export default function NeonStoreLayout({
     </div>
   );
 }
+
