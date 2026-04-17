@@ -7,8 +7,7 @@
       "command": "npm run dev",
       "options": {
         "cwd": "${workspaceFolder:web}"
-      },
-      "problemMatcher": []
+      }
     },
     {
       "label": "api:dev",
@@ -16,8 +15,7 @@
       "command": ".venv\\Scripts\\uvicorn app.main:app --reload",
       "options": {
         "cwd": "${workspaceFolder:api}"
-      },
-      "problemMatcher": []
+      }
     },
     {
       "label": "scrapers:run",
@@ -25,8 +23,7 @@
       "command": ".venv\\Scripts\\python jobs/run_all.py",
       "options": {
         "cwd": "${workspaceFolder:scrapers}"
-      },
-      "problemMatcher": []
+      }
     }
   ]
 }

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { Navbar } from "@/components/store/navbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Neon Monolith - Gaming Store",
-  description: "Premium high-end gaming hardware e-commerce platform",
+  title: "CompaPC",
+  description: "Catalogo de hardware con busqueda, categorias y filtros",
 };
 
 export default function RootLayout({
@@ -12,15 +13,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="h-full antialiased dark">
+    <html lang="es">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          rel="stylesheet"
+        />
       </head>
-      <body className="min-h-full flex flex-col bg-surface selection:bg-primary-container selection:text-on-primary-container">
-        {children}
+      <body suppressHydrationWarning>
+        <div className="site-shell">
+          <Navbar />
+          <main className="page-wrap">{children}</main>
+        </div>
       </body>
     </html>
   );

@@ -2,7 +2,8 @@
   "folders": [
     { "name": "web", "path": "apps/web" },
     { "name": "api", "path": "apps/api" },
-    { "name": "scrapers", "path": "services/scrapers" }
+    { "name": "scrapers", "path": "services/scrapers" },
+    { "name": "infra", "path": "infra" }
   ],
   "settings": {
     "files.exclude": {
