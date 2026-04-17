@@ -20,6 +20,7 @@ interface SidebarFiltersProps {
 
 export function SidebarFilters({
   categories,
+  onClose,
   activeCategory,
   brands,
   selectedBrands,

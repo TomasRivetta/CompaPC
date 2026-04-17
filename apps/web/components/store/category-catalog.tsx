@@ -12,18 +12,16 @@ import { CategorySlug } from "@/types/store";
 import { ProductGrid } from "./product-grid";
 import { SidebarFilters } from "./sidebar-filters";
 
-export function CategoryCatalog({ slug }: { slug: string }) {
+export function CategoryCatalog({ slug }: { slug: CategorySlug }) {
   const category = getCategoryBySlug(slug);
 
   if (!category) {
     return null;
   }
 
-  const safeSlug = category.slug as CategorySlug;
-
-  const initialProducts = useMemo(() => getProductsByCategory(safeSlug), [safeSlug]);
-  const brands = useMemo(() => getBrandsForCategory(safeSlug), [safeSlug]);
-  const bounds = useMemo(() => getPriceBounds(safeSlug), [safeSlug]);
+  const initialProducts = useMemo(() => getProductsByCategory(slug), [slug]);
+  const brands = useMemo(() => getBrandsForCategory(slug), [slug]);
+  const bounds = useMemo(() => getPriceBounds(slug), [slug]);
 
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>(bounds);
@@ -43,7 +41,7 @@ export function CategoryCatalog({ slug }: { slug: string }) {
     setQuery("");
     setPage(1);
     setFiltersOpen(false);
-  }, [safeSlug, bounds]);
+  }, [slug, bounds]);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -97,62 +95,6 @@ export function CategoryCatalog({ slug }: { slug: string }) {
 
   return (
     <div className="flex flex-col gap-10">
-      {/* Category Header */}
-      <header className="relative overflow-hidden rounded-[48px] bg-[#0c111d] px-8 py-16 text-white md:px-16 md:py-20 shadow-2xl">
-        {/* Animated Background Elements */}
-        <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-blue-600/10 blur-[120px]" />
-        <div className="absolute -left-20 -bottom-20 h-96 w-96 rounded-full bg-indigo-600/10 blur-[120px]" />
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] mix-blend-overlay" />
-        
-        <div className="relative z-10">
-          <nav className="mb-8 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">
-            <span className="hover:text-blue-400 cursor-pointer transition-colors">Inicio</span>
-            <span className="h-1 w-1 rounded-full bg-slate-700" />
-            <span className="hover:text-blue-400 cursor-pointer transition-colors">Catálogo</span>
-            <span className="h-1 w-1 rounded-full bg-slate-700" />
-            <span className="text-blue-400">{category.name}</span>
-          </nav>
-          
-          <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-            <div className="flex items-center gap-8">
-              <div className="relative group">
-                <div className="absolute inset-0 rounded-3xl bg-blue-500 blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
-                <div className="relative flex h-24 w-24 items-center justify-center rounded-[28px] bg-gradient-to-br from-blue-600 to-indigo-700 shadow-2xl shadow-blue-500/20 border border-white/10">
-                  <span className="material-symbols-outlined text-[48px] text-white transition-transform group-hover:scale-110 duration-500">
-                    {category.icon}
-                  </span>
-                </div>
-              </div>
-              <div>
-                <h1 className="font-headline text-6xl font-black tracking-tighter text-white lg:text-7xl">
-                  {category.name}
-                </h1>
-                <p className="mt-3 text-xl text-slate-400/80 font-medium max-w-lg leading-relaxed">
-                  Explorá nuestra selección de <span className="text-white underline decoration-blue-500/50 underline-offset-4">{category.name.toLowerCase()}</span> de alto rendimiento.
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="group relative">
-                <div className="absolute inset-0 rounded-2xl bg-white/5 blur-sm" />
-                <div className="relative rounded-2xl border border-white/10 bg-white/5 px-8 py-4 backdrop-blur-xl">
-                  <span className="text-sm font-bold tracking-tight text-white">
-                    {filteredProducts.length} <span className="text-slate-500 font-medium">unidades encontradas</span>
-                  </span>
-                </div>
-              </div>
-              <button 
-                onClick={() => setFiltersOpen(true)}
-                className="flex items-center gap-3 rounded-2xl bg-blue-600 px-8 py-4 text-sm font-bold text-white shadow-xl shadow-blue-600/20 transition-all hover:bg-blue-500 hover:-translate-y-0.5 active:translate-y-0 lg:hidden"
-              >
-                <span className="material-symbols-outlined text-lg">tune</span>
-                Filtros
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
 
       {/* Main Content Layout */}
       <section className="grid gap-12 lg:grid-cols-[300px_1fr]">
@@ -195,49 +137,40 @@ export function CategoryCatalog({ slug }: { slug: string }) {
 
         <div className="space-y-10">
           {/* Toolbar */}
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div className="group relative flex-1">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none">
-                <span className="material-symbols-outlined text-xl text-slate-400 group-focus-within:text-blue-600 transition-colors">
-                  search
-                </span>
-              </div>
-              <input
-                value={query}
-                onChange={(event) => {
-                  setQuery(event.target.value);
-                  setPage(1);
-                }}
-                className="h-14 w-full rounded-2xl border border-slate-200 bg-white pl-14 pr-6 text-sm font-medium transition-all focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/5 placeholder:text-slate-400 shadow-sm"
-                placeholder="Buscar por nombre o marca..."
-                type="text"
-              />
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Ordenar por:</span>
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(event) => {
-                    setSortBy(event.target.value);
-                    setPage(1);
-                  }}
-                  className="h-14 appearance-none rounded-2xl border border-slate-200 bg-white pl-6 pr-12 text-sm font-bold text-slate-700 outline-none focus:border-blue-500 shadow-sm transition-all focus:ring-4 focus:ring-blue-500/5 cursor-pointer"
-                >
-                  <option value="featured">Destacados</option>
-                  <option value="price-low">Menor precio</option>
-                  <option value="price-high">Mayor precio</option>
-                  <option value="brand">Marca</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                  unfold_more
-                </span>
-              </div>
-            </div>
-          </div>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <span className="text-sm text-slate-500">
+                {filteredProducts.length} resultados
+              </span>
 
-          <ProductGrid products={paginatedProducts} />
+              <div className="flex items-center gap-3">
+                <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+                  Ordenar
+                </span>
+
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={(event) => {
+                      setSortBy(event.target.value);
+                      setPage(1);
+                    }}
+                    className="h-10 appearance-none border border-slate-200 bg-white pl-3 pr-8 text-sm font-medium text-slate-700 transition-all outline-none hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+                  >
+                    <option value="price-low">Menor precio</option>
+                    <option value="price-high">Mayor precio</option>
+                    <option value="brand">Marca</option>
+                  </select>
+
+                  <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 material-symbols-outlined text-[16px] text-slate-400">
+                    expand_more
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <ProductGrid products={paginatedProducts} />
+          </div>
 
           {/* Pagination */}
           {totalPages > 1 && (

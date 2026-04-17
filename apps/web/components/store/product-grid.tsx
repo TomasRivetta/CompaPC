@@ -3,36 +3,35 @@ import { Product } from "@/types/store";
 import { getCategoryBySlug } from "@/lib/neon-store-utils";
 
 export function ProductGrid({ products }: { products: Product[] }) {
-  // Estado vacío
   if (products.length === 0) {
     return (
-      <div className="rounded-[32px] border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+      <div className="border border-dashed border-slate-300 bg-white p-12 text-center text-slate-500">
         No se encontraron productos.
       </div>
     );
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {products.map((product) => {
         const category = getCategoryBySlug(product.category);
 
         return (
           <article
             key={product.id}
-            className="group relative flex flex-col overflow-hidden rounded-[32px] border border-slate-200 bg-white transition-all duration-500 hover:-translate-y-1 hover:border-blue-500/30 hover:shadow-[0_20px_50px_rgba(59,130,246,0.1)]"
+            className="group relative flex flex-col overflow-hidden border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
           >
             {/* Badges */}
-            <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-4">
-              <span className="rounded-full border border-white/20 bg-white/80 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-900 shadow-sm backdrop-blur-md">
+            <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 pt-5">
+              <span className="border border-slate-200 bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-700 shadow-sm">
                 {product.brand}
               </span>
 
               <span
-                className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-sm backdrop-blur-md ${
+                className={`px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] shadow-sm ${
                   product.inStock
-                    ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-600"
-                    : "border border-rose-500/20 bg-rose-500/10 text-rose-600"
+                    ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border border-rose-200 bg-rose-50 text-rose-700"
                 }`}
               >
                 {product.inStock ? "Disponible" : "Sin stock"}
@@ -40,67 +39,63 @@ export function ProductGrid({ products }: { products: Product[] }) {
             </div>
 
             {/* Imagen */}
-            <div className="relative aspect-square overflow-hidden bg-slate-50">
+            <div className="relative aspect-square overflow-hidden border-b border-slate-100 bg-slate-50 px-6 pt-14 pb-6">
               <img
                 alt={product.name}
                 src={product.image}
-                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-blue-600/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </div>
 
             {/* Contenido */}
-            <div className="flex flex-1 flex-col p-6 pt-5 pb-4">
-              {/* Categoría */}
-              <div className="mb-3 flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-50 text-blue-600 ring-1 ring-blue-100">
-                  <span className="material-symbols-outlined text-[14px]">
-                    {category?.icon ?? "inventory_2"}
-                  </span>
-                </div>
+            <div className="flex flex-1 flex-col p-6 pb-5">
+              {/* Tienda */}
+              <div className="mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-slate-400">
+                  storefront
+                </span>
 
-                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
-                  {category?.name ?? "Categoría"}
+                <span className="text-[11px] font-medium text-slate-500">
+                  {product.brand}
                 </span>
               </div>
 
               {/* Nombre */}
-              <h3 className="mb-4 line-clamp-2 min-h-[2.8rem] font-headline text-[1.1rem] font-bold leading-tight tracking-tight text-slate-800 transition-colors group-hover:text-blue-600">
+              <h3 className="min-h-[3.2rem] text-[1rem] font-semibold leading-snug text-slate-900 transition-colors group-hover:text-blue-700">
                 {product.name}
               </h3>
 
               {/* Footer */}
-              <div className="mt-auto flex items-end justify-between gap-4 border-t border-slate-100/80 pt-4">
-                {/* Precio */}
-                <div className="flex flex-col">
-                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                    Precio final
-                  </span>
-
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-sm font-bold text-blue-600">$</span>
-
-                    <span className="font-headline text-2xl font-black tracking-tighter text-slate-900">
-                      {product.price.toLocaleString("es-AR")}
+              <div className="mt-auto pt-6 pb-1">
+                <div className="flex items-end justify-between gap-4 border-t border-slate-100 pt-5">
+                  {/* Precio */}
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                      Precio final
                     </span>
+
+                    <div className="mt-1 flex items-baseline gap-1">
+                      <span className="text-sm font-bold text-blue-600">$</span>
+                      <span className="font-headline text-2xl font-bold tracking-tight text-slate-900">
+                        {product.price.toLocaleString("es-AR")}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* CTA tipo link */}
+                  <Link
+                    href={`/producto/${product.id}`}
+                    aria-label={`Visitar la página de ${product.name}`}
+                    className="group/link mb-1 inline-flex items-center text-sm font-semibold text-slate-700 transition-colors duration-200 hover:text-blue-600"
+                  >
+                    Visitar la página
+                    <span className="ml-1 transition-transform duration-200 group-hover/link:translate-x-1">
+                      →
+                    </span>
+                  </Link>
                 </div>
-
-                {/* Botón corregido */}
-                <Link
-                  href={`/producto/${product.id}`}
-                  aria-label={`Ver más sobre ${product.name}`}
-                  className="group/btn flex h-11 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-white transition-all duration-300 hover:bg-blue-600 shadow-lg shadow-slate-200"
-                >
-                  <span className="material-symbols-outlined text-[20px] transition-transform duration-300 group-hover/btn:translate-x-1">
-                    arrow_forward
-                  </span>
-
-                  <span className="text-xs font-bold opacity-0 transition-opacity duration-300 group-hover/btn:opacity-100">
-                    Ver más
-                  </span>
-                </Link>
               </div>
             </div>
           </article>
