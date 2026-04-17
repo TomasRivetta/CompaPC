@@ -19,16 +19,21 @@ export function ProductGrid({ products }: { products: Product[] }) {
         return (
           <article
             key={product.id}
-            className="group relative flex flex-col overflow-hidden border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
+            className="group relative flex h-full flex-col overflow-hidden border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-200 hover:shadow-[0_20px_40px_rgba(15,23,42,0.12)]"
           >
+            <Link 
+              href={`/producto/${product.id}`}
+              className="absolute inset-0 z-20"
+              aria-label={`Ver detalles de ${product.name}`}
+            />
             {/* Badges */}
             <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 pt-5">
-              <span className="border border-slate-200 bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-700 shadow-sm">
+              <span className="border border-slate-200 bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-800 shadow-sm backdrop-blur-sm rounded-full">
                 {product.brand}
               </span>
 
               <span
-                className={`px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] shadow-sm ${
+                className={`px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] shadow-sm rounded-full ${
                   product.inStock
                     ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
                     : "border border-rose-200 bg-rose-50 text-rose-700"
@@ -39,62 +44,48 @@ export function ProductGrid({ products }: { products: Product[] }) {
             </div>
 
             {/* Imagen */}
-            <div className="relative aspect-square overflow-hidden border-b border-slate-100 bg-slate-50 px-6 pt-14 pb-6">
+            <div className="relative aspect-square overflow-hidden border-b border-slate-100 bg-slate-50 p-8 grayscale-[0.2] transition-all duration-500 group-hover:grayscale-0">
               <img
                 alt={product.name}
                 src={product.image}
-                className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                className="h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
               />
-
-              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </div>
 
             {/* Contenido */}
-            <div className="flex flex-1 flex-col p-6 pb-5">
-              {/* Tienda */}
+            <div className="flex flex-1 flex-col p-6">
               <div className="mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[16px] text-slate-400">
+                <span className="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-blue-500 transition-colors">
                   storefront
                 </span>
-
-                <span className="text-[11px] font-medium text-slate-500">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                   {product.brand}
                 </span>
               </div>
 
-              {/* Nombre */}
-              <h3 className="min-h-[3.2rem] text-[1rem] font-semibold leading-snug text-slate-900 transition-colors group-hover:text-blue-700">
+              <h3 className="mb-6 line-clamp-2 min-h-[3rem] font-headline text-lg font-bold leading-tight tracking-tight text-slate-900 transition-colors group-hover:text-blue-600">
                 {product.name}
               </h3>
 
-              {/* Footer */}
-              <div className="mt-auto pt-6 pb-1">
-                <div className="flex items-end justify-between gap-4 border-t border-slate-100 pt-5">
-                  {/* Precio */}
-                  <div className="flex flex-col">
-                    <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                      Precio final
+              <div className="mt-auto flex items-end justify-between gap-4 border-t border-slate-100 pt-5">
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                    Precio Final
+                  </span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-sm font-black text-blue-600">$</span>
+                    <span className="font-headline text-2xl font-black tracking-tighter text-slate-900">
+                      {product.price.toLocaleString("es-AR")}
                     </span>
-
-                    <div className="mt-1 flex items-baseline gap-1">
-                      <span className="text-sm font-bold text-blue-600">$</span>
-                      <span className="font-headline text-2xl font-bold tracking-tight text-slate-900">
-                        {product.price.toLocaleString("es-AR")}
-                      </span>
-                    </div>
                   </div>
+                </div>
 
-                  {/* CTA tipo link */}
-                  <Link
-                    href={`/producto/${product.id}`}
-                    aria-label={`Visitar la página de ${product.name}`}
-                    className="group/link mb-1 inline-flex items-center text-sm font-semibold text-slate-700 transition-colors duration-200 hover:text-blue-600"
-                  >
-                    Visitar la página
-                    <span className="ml-1 transition-transform duration-200 group-hover/link:translate-x-1">
-                      →
-                    </span>
-                  </Link>
+                <div className="relative z-30 mb-1 flex items-center gap-1 text-xs font-bold text-blue-600">
+                  <span>Ver más</span>
+                  <span className="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">
+                    arrow_right_alt
+                  </span>
                 </div>
               </div>
             </div>

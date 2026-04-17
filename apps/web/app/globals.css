@@ -48,6 +48,16 @@ button {
   transition: all 0.2s ease;
 }
 
+:root {
+  --site-pad: 32px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --site-pad: 20px;
+  }
+}
+
 .site-shell {
   min-height: 100vh;
   display: flex;
@@ -59,15 +69,8 @@ button {
   margin: 0 auto;
   width: 100%;
   max-width: 1440px;
-  padding-left: 32px;
-  padding-right: 32px;
-}
-
-@media (max-width: 768px) {
-  .container-standard {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
+  padding-left: var(--site-pad);
+  padding-right: var(--site-pad);
 }
 
 .page-wrap {
@@ -76,8 +79,8 @@ button {
   max-width: 1440px;
   padding-top: 48px;
   padding-bottom: 80px;
-  padding-left: 32px;
-  padding-right: 32px;
+  padding-left: var(--site-pad);
+  padding-right: var(--site-pad);
   flex: 1;
 }
 
@@ -117,8 +120,6 @@ button {
   .page-wrap {
     padding-top: 32px;
     padding-bottom: 60px;
-    padding-left: 20px;
-    padding-right: 20px;
   }
 }
 

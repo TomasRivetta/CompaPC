@@ -52,7 +52,7 @@ export function SidebarFilters({
   return (
     <div className="flex flex-col gap-5">
       {/* Categorías */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className=" border border-slate-200 bg-white p-4 shadow-sm">
         <button
           type="button"
           onClick={() => toggleSection("category")}
@@ -105,7 +105,7 @@ export function SidebarFilters({
       </section>
 
       {/* Marcas */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className=" border border-slate-200 bg-white p-4 shadow-sm">
         <button
           type="button"
           onClick={() => toggleSection("brands")}
@@ -169,7 +169,7 @@ export function SidebarFilters({
       </section>
 
       {/* Presupuesto */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className=" border border-slate-200 bg-white p-4 shadow-sm">
         <button
           type="button"
           onClick={() => toggleSection("price")}
@@ -248,7 +248,7 @@ export function SidebarFilters({
       </section>
 
       {/* Stock */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="border border-slate-200 bg-white p-4 shadow-sm">
         <button
           type="button"
           onClick={() => toggleSection("stock")}

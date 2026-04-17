@@ -45,18 +45,21 @@ export function Navbar() {
           </Link>
         </div>
 
-<div className="group flex w-full items-center rounded-2xl border border-slate-200 bg-slate-50 px-4">
-  <span className="material-symbols-outlined text-lg text-slate-400 group-focus-within:text-blue-600 transition-colors">
-    search
-  </span>
-  <input
-    value={query}
-    onChange={(event) => setQuery(event.target.value)}
-    className="ml-2 h-11 w-full bg-transparent text-sm text-slate-700 focus:outline-none placeholder:text-slate-400"
-    placeholder="Buscar componentes, marcas o categorías..."
-    type="text"
-  />
-</div>
+        <form 
+          onSubmit={handleSubmit}
+          className="group flex w-full items-center rounded-2xl border border-slate-200 bg-slate-50 px-5 transition-all focus-within:border-blue-500 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-500/5 shadow-sm"
+        >
+          <span className="material-symbols-outlined text-lg text-slate-400 group-focus-within:text-blue-600 transition-colors">
+            search
+          </span>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            className="ml-4 h-12 w-full bg-transparent text-sm font-medium text-slate-700 outline-none placeholder:text-slate-400"
+            placeholder="Buscar componentes, marcas o categorías..."
+            type="text"
+          />
+        </form>
       </div>
     </header>
   );
