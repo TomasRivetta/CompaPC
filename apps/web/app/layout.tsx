@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Footer } from "@/components/store/footer";
 import { Navbar } from "@/components/store/navbar";
 import "./globals.css";
 
@@ -30,6 +31,7 @@ export default function RootLayout({
         <div className="site-shell">
           <Navbar />
           <main className="page-wrap">{children}</main>
+          <Footer />
         </div>
       </body>
     </html>
