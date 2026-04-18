@@ -38,7 +38,6 @@ def get_compragamer_products():
     marcas_map = build_lookup(marcas_data, "id", "nombre")
 
     products = []
-
     for p in products_data:
         if p.get("vendible") != 1:
             continue
@@ -57,5 +56,6 @@ def get_compragamer_products():
         }
 
         products.append(product)
+
 
     return products

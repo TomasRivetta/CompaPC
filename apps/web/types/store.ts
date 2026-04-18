@@ -39,5 +39,21 @@ export interface Product {
   brand: string;
   price: number;
   inStock: boolean;
-  image: string;
+  image?: string;
+  store?: string;
+  url?: string;
+}
+
+export interface ApiOffer {
+  id: number;
+  store: string;
+  external_id: number;
+  title: string;
+  normalized_title: string;
+  price: number | null;
+  price_list: number | null;
+  stock: number;
+  category: string | null;
+  marca: string | null;
+  url: string;
 }

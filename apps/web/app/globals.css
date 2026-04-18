@@ -138,3 +138,41 @@ button {
 .card-shadow-hover {
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
+
+@keyframes shimmer-slide {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.loading-slider-track {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-slider-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 35%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent 0%, #2563eb 35%, #60a5fa 100%);
+  animation: shimmer-slide 1.15s ease-in-out infinite;
+}
+
+.loading-pulse {
+  animation: pulse-soft 1.4s ease-in-out infinite;
+}

@@ -1,4 +1,5 @@
 from stores.compra_gamer import get_compragamer_products
+from shared.persistence import save_products
 
 
 def run():
@@ -12,8 +13,12 @@ def run():
 
     print(f"Total general: {len(all_products)}")
 
-    for p in all_products[:10]:
-        print(p)
+    if not all_products:
+        print("No se obtuvieron productos para persistir.")
+        return
+
+    save_products(all_products)
+    print("Scraping persistido en la base de datos.")
 
 if __name__ == "__main__":
     run()

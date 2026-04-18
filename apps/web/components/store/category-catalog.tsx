@@ -3,25 +3,30 @@
 import { useEffect, useMemo, useState } from "react";
 import { categories } from "@/data/store-data";
 import {
-  getBrandsForCategory,
+  getBrandsForProducts,
   getCategoryBySlug,
   getPriceBounds,
-  getProductsByCategory,
 } from "@/lib/neon-store-utils";
-import { CategorySlug } from "@/types/store";
+import { CategorySlug, Product } from "@/types/store";
 import { ProductGrid } from "./product-grid";
 import { SidebarFilters } from "./sidebar-filters";
 
-export function CategoryCatalog({ slug }: { slug: CategorySlug }) {
+export function CategoryCatalog({
+  slug,
+  products,
+}: {
+  slug: CategorySlug;
+  products: Product[];
+}) {
   const category = getCategoryBySlug(slug);
 
   if (!category) {
     return null;
   }
 
-  const initialProducts = useMemo(() => getProductsByCategory(slug), [slug]);
-  const brands = useMemo(() => getBrandsForCategory(slug), [slug]);
-  const bounds = useMemo(() => getPriceBounds(slug), [slug]);
+  const initialProducts = useMemo(() => products, [products]);
+  const brands = useMemo(() => getBrandsForProducts(initialProducts), [initialProducts]);
+  const bounds = useMemo(() => getPriceBounds(initialProducts), [initialProducts]);
 
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>(bounds);
@@ -139,9 +144,9 @@ export function CategoryCatalog({ slug }: { slug: CategorySlug }) {
           {/* Toolbar */}
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-              <span className="text-sm text-slate-500">
-                {filteredProducts.length} resultados
-              </span>
+                <span className="text-sm text-slate-500">
+                  {filteredProducts.length} resultados
+                </span>
 
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">

@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { Product } from "@/types/store";
-import { getCategoryBySlug } from "@/lib/neon-store-utils";
 
 export function ProductGrid({ products }: { products: Product[] }) {
   if (products.length === 0) {
@@ -14,22 +12,22 @@ export function ProductGrid({ products }: { products: Product[] }) {
   return (
     <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {products.map((product) => {
-        const category = getCategoryBySlug(product.category);
-
         return (
           <article
             key={product.id}
             className="group relative flex h-full flex-col overflow-hidden border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-200 hover:shadow-[0_20px_40px_rgba(15,23,42,0.12)]"
           >
-            <Link 
-              href={`/producto/${product.id}`}
+            <a
+              href={product.url ?? "#"}
+              target="_blank"
+              rel="noreferrer"
               className="absolute inset-0 z-20"
-              aria-label={`Ver detalles de ${product.name}`}
+              aria-label={`Ver oferta de ${product.name}`}
             />
             {/* Badges */}
             <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 pt-5">
               <span className="border border-slate-200 bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-800 shadow-sm backdrop-blur-sm rounded-full">
-                {product.brand}
+                {product.store ?? product.brand}
               </span>
 
               <span
@@ -45,11 +43,19 @@ export function ProductGrid({ products }: { products: Product[] }) {
 
             {/* Imagen */}
             <div className="relative aspect-square overflow-hidden border-b border-slate-100 bg-slate-50 p-8 grayscale-[0.2] transition-all duration-500 group-hover:grayscale-0">
-              <img
-                alt={product.name}
-                src={product.image}
-                className="h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
-              />
+              {product.image ? (
+                <img
+                  alt={product.name}
+                  src={product.image}
+                  className="h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-white text-slate-300 transition-transform duration-700 ease-out group-hover:scale-105">
+                  <span className="material-symbols-outlined text-[72px]">
+                    inventory_2
+                  </span>
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </div>
 
@@ -82,7 +88,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
                 </div>
 
                 <div className="relative z-30 mb-1 flex items-center gap-1 text-xs font-bold text-blue-600">
-                  <span>Ver más</span>
+                  <span>Ir a tienda</span>
                   <span className="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">
                     arrow_right_alt
                   </span>
