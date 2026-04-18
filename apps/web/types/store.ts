@@ -56,4 +56,5 @@ export interface ApiOffer {
   category: string | null;
   marca: string | null;
   url: string;
+  image: string | null;
 }

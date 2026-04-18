@@ -76,6 +76,7 @@ def list_offers(
             "category": offer.category,
             "marca": offer.marca,
             "url": offer.url,
+            "image": offer.image,
         }
         for offer in offers
     ]

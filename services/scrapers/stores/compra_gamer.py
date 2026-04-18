@@ -15,6 +15,18 @@ def created_url(name: str, id_product: int) -> str:
     product_name = clean_text(name).replace(" ", "_").replace("-", "_")
     return f"{BASE_URL}/producto/{product_name}_{id_product}"
 
+
+def create_image_url(images: list[dict] | None) -> str | None:
+    if not images:
+        return None
+
+    ordered_images = sorted(images, key=lambda image: image.get("orden", 9999))
+    image_name = ordered_images[0].get("nombre")
+    if not image_name:
+        return None
+
+    return f"https://imagenes.compragamer.com/productos/compragamer_Imganen_general_{image_name}-mini.jpg"
+
 def build_lookup(data: list, key_field: str = "id", value_field: str = "nombre") -> dict:
     if not data:
         return {}
@@ -53,6 +65,7 @@ def get_compragamer_products():
             "category": categorias_map.get(p.get("id_categoria"), ""),
             "marca": marcas_map.get(p.get("id_marca"), ""),
             "url": created_url(p.get("nombre", ""), p.get("id_producto")),
+            "image": create_image_url(p.get("imagenes")),
         }
 
         products.append(product)

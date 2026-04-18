@@ -1,13 +1,25 @@
-from sqlalchemy import delete
+from sqlalchemy import delete, inspect, text
 
 from shared.db import SessionLocal, engine
 from shared.models import Base, ProductOffer
 
 
+def ensure_product_offers_schema() -> None:
+    Base.metadata.create_all(bind=engine)
+
+    inspector = inspect(engine)
+    columns = {column["name"] for column in inspector.get_columns("product_offers")}
+    if "image" not in columns:
+        with engine.begin() as connection:
+            connection.execute(
+                text("ALTER TABLE product_offers ADD COLUMN image VARCHAR(1000)")
+            )
+
+
 def save_products(products: list[dict]) -> None:
     stores = {product["store"] for product in products}
 
-    Base.metadata.create_all(bind=engine)
+    ensure_product_offers_schema()
 
     with SessionLocal() as session:
         for store in stores:
@@ -25,6 +37,7 @@ def save_products(products: list[dict]) -> None:
                 category=product["category"],
                 marca=product["marca"],
                 url=product["url"],
+                image=product.get("image"),
             )
             for product in products
         )

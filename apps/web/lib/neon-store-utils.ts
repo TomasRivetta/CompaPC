@@ -105,6 +105,7 @@ export function mapOfferToProduct(offer: ApiOffer): Product | null {
     brand: offer.marca?.trim() || offer.store,
     price: offer.price,
     inStock: offer.stock > 0,
+    image: offer.image ?? undefined,
     store: offer.store,
     url: offer.url,
   };

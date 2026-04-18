@@ -20,3 +20,4 @@ class ProductOffer(Base):
     category: Mapped[str | None] = mapped_column(String(255), nullable=True)
     marca: Mapped[str | None] = mapped_column(String(255), nullable=True)
     url: Mapped[str] = mapped_column(String(1000), nullable=False)
+    image: Mapped[str | None] = mapped_column(String(1000), nullable=True)
