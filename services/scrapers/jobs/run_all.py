@@ -1,6 +1,6 @@
 from stores.compra_gamer import get_compragamer_products
 from shared.persistence import save_products
-
+from stores.full_h4rd import get_full_h4rd_products
 
 def run():
     all_products = []
@@ -8,14 +8,20 @@ def run():
     print("Scraping Compra Gamer...")
     all_products.extend(get_compragamer_products())
 
-    #print("Scraping Maximus...")
-    #all_products.extend(get_maximus_products())
+    print("Scraping FullH4rd...")
+    all_products.extend(get_full_h4rd_products())
+
 
     print(f"Total general: {len(all_products)}")
 
     if not all_products:
         print("No se obtuvieron productos para persistir.")
         return
+
+    #print(all_products[0])
+    #for product in all_products [:10]:  # Mostrar solo los primeros 10 productos para evitar saturar la salida
+        #print(f"{product['store']} - {product['title']} - {product['price']}")
+        
 
     save_products(all_products)
     print("Scraping persistido en la base de datos.")
