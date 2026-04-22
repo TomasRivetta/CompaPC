@@ -63,7 +63,7 @@ Facilitar la decisión de compra mostrando:
 Desde la raíz del proyecto:
 
 ```bash
-cd c:\Users\minio\Dev\personal\compapc
+cd ubicacionDelProyecto
 docker compose -f infra/docker/docker-compose.yml up --build
 ```
 
