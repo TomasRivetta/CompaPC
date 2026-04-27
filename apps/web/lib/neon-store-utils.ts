@@ -42,6 +42,8 @@ const categoryAliases: Record<CategorySlug, string[]> = {
   keyboard: ["teclados", "teclado", "keyboard"],
 };
 
+const titleFallbackAllowed = new Set<CategorySlug>(["storage", "peripherals"]);
+
 const titleMatchers: Array<{ slug: CategorySlug; keywords: string[] }> = [
   { slug: "gpu", keywords: ["rtx ", "gtx ", "radeon", "rx ", "placa de video", "geforce"] },
   { slug: "cpu", keywords: ["procesador", "ryzen", "core i", "core ultra", "athlon", "threadripper"] },
@@ -49,16 +51,16 @@ const titleMatchers: Array<{ slug: CategorySlug; keywords: string[] }> = [
   { slug: "ram", keywords: ["memoria ", "ddr4", "ddr5", "sodimm"] },
   { slug: "ssd", keywords: ["ssd", "nvme", "m.2", "solid state"] },
   { slug: "hdd", keywords: ["disco rigido", "hdd", "barracuda", "wd blue"] },
-  { slug: "psu", keywords: ["fuente ", "80 plus", "atx 3.0", "psu"] },
+  { slug: "psu", keywords: ["fuente ", "80 plus", "psu"] },
   { slug: "cases", keywords: ["gabinete", "case ", "mid tower", "mini itx"] },
   { slug: "cooling", keywords: ["cooler", "water cooler", "liquid cooler", "refrigeracion", "ventilador"] },
-  { slug: "monitor", keywords: ["monitor", "ultragear", "odyssey", "144hz", "240hz", "ips ", "curvo"] },
+  { slug: "monitor", keywords: ["monitor", "ultragear", "odyssey"] },
   { slug: "notebooks", keywords: ["notebook", "laptop", "macbook"] },
   { slug: "mouse", keywords: ["mouse ", "mousepad", "superlight", "deathadder", "viper "] },
   { slug: "keyboard", keywords: ["teclado", "keyboard", "switch ", "keychron"] },
   { slug: "headset", keywords: ["auricular", "headset", "kraken", "cloud iii", "g733"] },
-  { slug: "connectivity", keywords: ["wifi", "wi-fi", "bluetooth", "placa de red", "router", "adaptador usb", "pcie wifi"] },
-  { slug: "mobile", keywords: ["celular", "smartphone", "smartwatch", "iphone", "samsung a", "funda celular"] },
+  { slug: "connectivity", keywords: ["wifi", "wi-fi", "bluetooth", "placa de red", "router", "pcie wifi"] },
+  { slug: "mobile", keywords: ["celular", "smartphone", "smartwatch", "iphone", "funda celular"] },
   { slug: "printers", keywords: ["impresora", "multifuncion", "toner"] },
   { slug: "gaming-chairs", keywords: ["silla gamer", "nitro concepts", "dxracer"] },
   { slug: "robots", keywords: ["robot", "robosen"] },
@@ -111,9 +113,22 @@ export function mapOfferToProduct(offer: ApiOffer): Product | null {
   };
 }
 
-export function inferCategorySlug(input: {
+function getCategorySlugFromCategoryName(category?: string | null) {
+  if (!category) {
+    return null;
+  }
+
+  const normalized = normalizeCategoryName(category);
+
+  return (
+    (Object.entries(categoryAliases).find(([, aliases]) =>
+      aliases.some((alias) => normalized.includes(normalizeCategoryName(alias)))
+    )?.[0] as CategorySlug | undefined) ?? null
+  );
+}
+
+function getCategorySlugFromTitle(input: {
   title?: string | null;
-  category?: string | null;
   brand?: string | null;
 }) {
   const normalizedTitle = normalizeCategoryName(
@@ -130,15 +145,20 @@ export function inferCategorySlug(input: {
     }
   }
 
-  if (!input.category) {
-    return null;
+  return null;
+}
+
+export function inferCategorySlug(input: {
+  title?: string | null;
+  category?: string | null;
+  brand?: string | null;
+}) {
+  const categorySlug = getCategorySlugFromCategoryName(input.category);
+  const titleSlug = getCategorySlugFromTitle(input);
+
+  if (categorySlug && titleFallbackAllowed.has(categorySlug) && titleSlug) {
+    return titleSlug;
   }
 
-  const normalized = normalizeCategoryName(input.category);
-
-  return (
-    (Object.entries(categoryAliases).find(([, aliases]) =>
-      aliases.some((alias) => normalized.includes(normalizeCategoryName(alias)))
-    )?.[0] as CategorySlug | undefined) ?? null
-  );
+  return categorySlug ?? titleSlug;
 }
