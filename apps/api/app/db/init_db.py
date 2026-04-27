@@ -14,6 +14,11 @@ def init_db():
             connection.execute(
                 text("ALTER TABLE product_offers ADD COLUMN image VARCHAR(1000)")
             )
+    if "category_id" not in columns:
+        with engine.begin() as connection:
+            connection.execute(
+                text("ALTER TABLE product_offers ADD COLUMN category_id INTEGER")
+            )
 
 if __name__ == "__main__":
     init_db()

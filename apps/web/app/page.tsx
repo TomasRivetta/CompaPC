@@ -1,9 +1,16 @@
 import { CategoryGrid } from "@/components/store/category-grid";
-import { categories } from "@/data/store-data";
-import { getApiHealth } from "@/lib/api";
+import { getApiHealth, getCategories } from "@/lib/api";
 
 export default async function HomePage() {
-  const apiHealth = await getApiHealth();
+  const [apiHealthResult, categoriesResult] = await Promise.allSettled([
+    getApiHealth(),
+    getCategories(),
+  ]);
+  const categories = categoriesResult.status === "fulfilled" ? categoriesResult.value : [];
+  const apiHealth =
+    apiHealthResult.status === "fulfilled" && categoriesResult.status === "fulfilled"
+      ? apiHealthResult.value
+      : { ok: false };
 
   return (
     <section className="space-y-6">
@@ -26,6 +33,13 @@ export default async function HomePage() {
           </p>
         </div>
       </div>
+      {!categories.length ? (
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 px-6 py-5 text-sm text-amber-900">
+          No se pudieron cargar las categorías. Verificá que la API configurada exponga
+          `/categories` y que el backend local esté levantado si estás desarrollando en tu
+          máquina.
+        </div>
+      ) : null}
       <CategoryGrid categories={categories} />
     </section>
   );

@@ -2,12 +2,20 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
-import { categories, products } from "@/data/store-data";
+import { FormEvent, useEffect, useState } from "react";
+import { getCategories } from "@/lib/api";
+import { Category } from "@/types/store";
 
 export function Navbar() {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    getCategories()
+      .then(setCategories)
+      .catch(() => setCategories([]));
+  }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -18,15 +26,11 @@ export function Navbar() {
       return;
     }
 
-    const category =
-      categories.find((item) => item.name.toLowerCase().includes(value)) ??
-      products.find(
-        (item) =>
-          item.name.toLowerCase().includes(value) ||
-          item.brand.toLowerCase().includes(value)
-      )?.category;
-
-    const slug = typeof category === "string" ? category : category?.slug;
+    const category = categories.find(
+      (item) =>
+        item.name.toLowerCase().includes(value) || item.slug.toLowerCase().includes(value)
+    );
+    const slug = category?.slug;
     router.push(slug ? `/categoria/${slug}` : "/");
   }
 

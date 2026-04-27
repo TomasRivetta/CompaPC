@@ -1,28 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { categories } from "@/data/store-data";
-import { getBrandsForProducts, getCategoryBySlug, getPriceBounds } from "@/lib/neon-store-utils";
-import { CategorySlug, Product } from "@/types/store";
+import { getBrandsForProducts, getPriceBounds } from "@/lib/store-utils";
+import { Category, Product } from "@/types/store";
 import { ProductGrid } from "./product-grid";
 import { SidebarFilters } from "./sidebar-filters";
 
 export function CategoryCatalog({
-  slug,
+  category,
+  categories,
   products,
 }: {
-  slug: CategorySlug;
+  category: Category;
+  categories: Category[];
   products: Product[];
 }) {
-  const category = getCategoryBySlug(slug);
-
-  if (!category) {
-    return null;
-  }
-
   const initialProducts = useMemo(
-    () => products.filter((product) => product.category === slug),
-    [products, slug]
+    () => products.filter((product) => product.category === category.slug),
+    [products, category.slug]
   );
   const brands = useMemo(() => getBrandsForProducts(initialProducts), [initialProducts]);
   const bounds = useMemo(() => getPriceBounds(initialProducts), [initialProducts]);
@@ -45,7 +40,7 @@ export function CategoryCatalog({
     setQuery("");
     setPage(1);
     setFiltersOpen(false);
-  }, [slug, bounds]);
+  }, [category.slug, bounds]);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();

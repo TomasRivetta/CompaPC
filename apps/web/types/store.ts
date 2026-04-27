@@ -1,41 +1,19 @@
-export type CategorySlug =
-  | "desktop-pc"
-  | "notebooks"
-  | "gpu"
-  | "cpu"
-  | "motherboard"
-  | "ram"
-  | "storage"
-  | "cooling"
-  | "cases"
-  | "psu"
-  | "monitor"
-  | "peripherals"
-  | "gaming-chairs"
-  | "robots"
-  | "connectivity"
-  | "ups"
-  | "consoles"
-  | "cables"
-  | "mobile"
-  | "printers"
-  | "tv"
-  | "hdd"
-  | "mouse"
-  | "headset"
-  | "ssd"
-  | "keyboard";
-
 export interface Category {
-  slug: CategorySlug;
+  id: number;
+  store: string;
+  externalId: number | null;
+  slug: string;
   name: string;
   icon: string;
+  image?: string;
+  sortOrder?: number | null;
+  productCount?: number;
 }
 
 export interface Product {
   id: number;
   name: string;
-  category: CategorySlug;
+  category: string;
   brand: string;
   price: number;
   inStock: boolean;
@@ -54,7 +32,21 @@ export interface ApiOffer {
   price_list: number | null;
   stock: number;
   category: string | null;
+  category_slug: string | null;
+  category_name: string | null;
+  category_external_id: number | null;
   marca: string | null;
   url: string;
   image: string | null;
+}
+
+export interface ApiCategory {
+  id: number;
+  store: string;
+  external_id: number | null;
+  slug: string;
+  name: string;
+  image: string | null;
+  sort_order: number | null;
+  product_count: number;
 }

@@ -5,10 +5,19 @@ from config.urls_compra_gamer import (
     COMPRAGAMER_CATEGORY_URL as CATEGORIAS_URL,
     COMPRAGAMER_MARCAS_URL as MARCAS_URL,
 )
+import re
+import unicodedata
 
 from shared.http import get_json
 from shared.cleaners import clean_text, clean_price
 from shared.normalizer import normalize_name
+
+
+def slugify_category(name: str) -> str:
+    normalized = unicodedata.normalize("NFD", clean_text(name))
+    ascii_name = normalized.encode("ascii", "ignore").decode("ascii").lower()
+    sanitized = re.sub(r"[^a-z0-9]+", " ", ascii_name)
+    return "-".join(part for part in sanitized.split() if part)
 
 
 def created_url(name: str, id_product: int) -> str:
@@ -38,16 +47,40 @@ def build_lookup(data: list, key_field: str = "id", value_field: str = "nombre")
     }
 
 
-def get_compragamer_products():
+def parse_optional_int(value):
+    if value in (None, "", "None"):
+        return None
+
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def get_compragamer_catalog():
     products_data = get_json(PRODUCTS_URL)
     categorias_data = get_json(CATEGORIAS_URL)
     marcas_data = get_json(MARCAS_URL)
 
     if not products_data:
-        return []
+        return [], []
 
     categorias_map = build_lookup(categorias_data, "id", "nombre")
     marcas_map = build_lookup(marcas_data, "id", "nombre")
+    categories = [
+        {
+            "store": STORE_NAME,
+            "external_id": category.get("id"),
+            "name": clean_text(category.get("nombre")),
+            "slug": slugify_category(category.get("nombre", "")),
+            "group_external_id": parse_optional_int(category.get("id_agrupador")),
+            "image": category.get("imagen") or None,
+            "hidden_keywords": clean_text(category.get("sub_cate_oculto_ponderado")),
+            "sort_order": parse_optional_int(category.get("orden")),
+        }
+        for category in categorias_data or []
+        if category.get("id") is not None and category.get("nombre")
+    ]
 
     products = []
     for p in products_data:
@@ -63,6 +96,7 @@ def get_compragamer_products():
             "price_list": clean_price(p.get("precioLista")),
             "stock": p.get("stock", 0),
             "category": categorias_map.get(p.get("id_subcategoria"), ""),
+            "category_external_id": p.get("id_subcategoria"),
             "marca": marcas_map.get(p.get("id_marca"), ""),
             "url": created_url(p.get("nombre", ""), p.get("id_producto")),
             "image": create_image_url(p.get("imagenes")),
@@ -70,5 +104,9 @@ def get_compragamer_products():
 
         products.append(product)
 
+    return products, categories
 
+
+def get_compragamer_products():
+    products, _ = get_compragamer_catalog()
     return products

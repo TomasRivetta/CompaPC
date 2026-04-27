@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { CategoryCatalog } from "@/components/store/category-catalog";
-import { getProductsByCategoryFromApi } from "@/lib/api";
-import { getCategoryBySlug } from "@/lib/neon-store-utils";
+import { getCategories, getProductsByCategoryFromApi } from "@/lib/api";
+import { getCategoryBySlug } from "@/lib/store-utils";
 
 export default async function CategoryPage({
   params,
@@ -9,7 +9,8 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const category = getCategoryBySlug(slug);
+  const categories = await getCategories();
+  const category = getCategoryBySlug(categories, slug);
 
   if (!category) {
     notFound();
@@ -17,5 +18,5 @@ export default async function CategoryPage({
 
   const products = await getProductsByCategoryFromApi(category.slug);
 
-  return <CategoryCatalog slug={category.slug} products={products} />;
+  return <CategoryCatalog category={category} categories={categories} products={products} />;
 }
