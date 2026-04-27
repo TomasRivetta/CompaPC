@@ -62,7 +62,7 @@ def get_compragamer_products():
             "price": clean_price(p.get("precioEspecial")),
             "price_list": clean_price(p.get("precioLista")),
             "stock": p.get("stock", 0),
-            "category": categorias_map.get(p.get("id_categoria"), ""),
+            "category": categorias_map.get(p.get("id_subcategoria"), ""),
             "marca": marcas_map.get(p.get("id_marca"), ""),
             "url": created_url(p.get("nombre", ""), p.get("id_producto")),
             "image": create_image_url(p.get("imagenes")),

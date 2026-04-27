@@ -1,5 +1,5 @@
-import { ApiOffer, CategorySlug } from "@/types/store";
-import { inferCategorySlug, mapOfferToProduct } from "@/lib/neon-store-utils";
+import { mapOfferToProduct } from "@/lib/neon-store-utils";
+import { ApiOffer, CategorySlug, Product } from "@/types/store";
 
 const publicApiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const internalApiUrl = process.env.INTERNAL_API_URL ?? publicApiUrl;
@@ -41,14 +41,6 @@ export async function getProductsByCategoryFromApi(slug: CategorySlug) {
   const offers = await getOffers();
 
   return offers
-    .filter(
-      (offer) =>
-        inferCategorySlug({
-          title: offer.title,
-          category: offer.category,
-          brand: offer.marca,
-        }) === slug
-    )
     .map(mapOfferToProduct)
-    .filter((product) => product !== null);
+    .filter((product): product is Product => product !== null && product.category === slug);
 }

@@ -2,11 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { categories } from "@/data/store-data";
-import {
-  getBrandsForProducts,
-  getCategoryBySlug,
-  getPriceBounds,
-} from "@/lib/neon-store-utils";
+import { getBrandsForProducts, getCategoryBySlug, getPriceBounds } from "@/lib/neon-store-utils";
 import { CategorySlug, Product } from "@/types/store";
 import { ProductGrid } from "./product-grid";
 import { SidebarFilters } from "./sidebar-filters";
@@ -24,7 +20,10 @@ export function CategoryCatalog({
     return null;
   }
 
-  const initialProducts = useMemo(() => products, [products]);
+  const initialProducts = useMemo(
+    () => products.filter((product) => product.category === slug),
+    [products, slug]
+  );
   const brands = useMemo(() => getBrandsForProducts(initialProducts), [initialProducts]);
   const bounds = useMemo(() => getPriceBounds(initialProducts), [initialProducts]);
 
