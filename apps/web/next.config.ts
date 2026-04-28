@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**.googleusercontent.com",
       },
+      {
+        protocol: "https",
+        hostname: "imagenes.compragamer.com",
+      },
+      {
+        protocol: "https",
+        hostname: "fullh4rd.com.ar",
+      },
     ],
   },
 };
