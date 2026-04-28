@@ -5,12 +5,18 @@ export interface Category {
   slug: string;
   name: string;
   icon: string;
-  groupName: string;
-  groupOrder: number;
-  itemOrder: number;
+  groupName?: string;
+  groupOrder?: number;
+  itemOrder?: number;
   image?: string;
   sortOrder?: number | null;
   productCount?: number;
+}
+
+export interface GroupedCategory extends Category {
+  groupName: string;
+  groupOrder: number;
+  itemOrder: number;
 }
 
 export interface Product {

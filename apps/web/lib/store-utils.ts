@@ -1,4 +1,4 @@
-import { ApiOffer, Category, Product } from "@/types/store";
+import { ApiOffer, Category, GroupedCategory, Product } from "@/types/store";
 
 function normalizeCategoryName(value: string) {
   return value
@@ -167,9 +167,27 @@ export function slugifyCategoryName(value: string) {
 }
 
 export function groupCategories(categories: Category[]) {
-  const groups = new Map<string, { name: string; order: number; categories: Category[] }>();
+  const groups = new Map<string, { name: string; order: number; categories: GroupedCategory[] }>();
 
-  for (const category of categories) {
+  const categoriesWithFallbackGrouping: GroupedCategory[] = categories.map((category) => {
+    if (
+      category.groupName != null &&
+      category.groupOrder != null &&
+      category.itemOrder != null
+    ) {
+      return category as GroupedCategory;
+    }
+
+    const grouping = getCategoryGrouping(category);
+    return {
+      ...category,
+      groupName: grouping.groupName,
+      groupOrder: grouping.groupOrder,
+      itemOrder: grouping.itemOrder,
+    };
+  });
+
+  for (const category of categoriesWithFallbackGrouping) {
     const existingGroup = groups.get(category.groupName);
     if (existingGroup) {
       existingGroup.categories.push(category);

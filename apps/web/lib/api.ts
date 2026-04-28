@@ -1,5 +1,5 @@
 import { getCategoryGrouping, getCategoryIcon, mapOfferToProduct } from "@/lib/store-utils";
-import { ApiCategory, ApiOffer, Category, Product } from "@/types/store";
+import { ApiCategory, ApiOffer, Category, GroupedCategory, Product } from "@/types/store";
 
 const publicApiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const internalApiUrl = process.env.INTERNAL_API_URL ?? publicApiUrl;
@@ -64,7 +64,7 @@ export async function getCategories() {
   }
 
   const categories = (await response.json()) as ApiCategory[];
-  const dedupedCategories = new Map<string, Category>();
+  const dedupedCategories = new Map<string, GroupedCategory>();
 
   for (const category of categories) {
     const grouping = getCategoryGrouping(category);
