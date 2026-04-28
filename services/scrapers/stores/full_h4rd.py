@@ -1,50 +1,51 @@
+import json
 import re
+from functools import lru_cache
 from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
 
-from shared.cleaners import clean_text, clean_price
-from shared.normalizer import normalize_name
 from config.urls_full_h4rd import (
-    STORE_NAME,
     FULLH4RD_BASE_URL,
-    FULLH4RD_AURICULARES_URL,
+    FULLH4RD_PERIFERICOS_URL,
+    STORE_NAME,
 )
+from shared.cleaners import clean_price, clean_text
+from shared.normalizer import normalize_name
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0",
 }
 
-
-def extract_price(text: str | None) -> int | None:
-    """
-    Convierte strings tipo:
-    '$57.001,37' -> 57001
-    '$1.234.567,89' -> 1234567
-    """
-    if not text:
-        return None
-
-    match = re.search(r"\$\s*([\d\.]+),\d{2}", text)
-    if not match:
-        return None
-
-    integer_part = match.group(1).replace(".", "")
-    return clean_price(integer_part)
+TITLE_CATEGORY_RULES: list[tuple[str, list[str]]] = [
+    ("webcam", ["webcam"]),
+    ("microfonos", ["microfono", "microfonos"]),
+    ("auriculares", ["auricular", "auriculares", "headset", "headphone"]),
+    ("teclados", ["teclado", "keyboard"]),
+    ("mouses", ["mouse", "mice"]),
+    ("mouse pads", ["mouse pad", "pad mouse"]),
+    ("joysticks", ["joystick", "gamepad"]),
+    ("stream deck", ["stream deck"]),
+    ("monitores", ["monitor"]),
+    ("notebooks", ["notebook", "laptop"]),
+    ("memorias", ["memoria ddr", "ddr4", "ddr5", "ram"]),
+    ("procesadores", ["ryzen", "core i", "procesador", "cpu"]),
+    ("placas de video", ["geforce", "rtx", "gtx", "radeon", "intel arc"]),
+    ("ssd", ["ssd", "nvme", "m.2"]),
+    ("discos externos", ["disco externo"]),
+    ("gabinetes", ["gabinete"]),
+    ("fuentes de alimentacion", ["fuente", "psu"]),
+    ("coolers", ["cooler", "fan"]),
+]
 
 
 def extract_all_prices(text: str | None) -> list[int]:
-    """
-    Devuelve todos los precios enteros encontrados en el texto.
-    Ej:
-    '$57.001,37 $62.701,48' -> [57001, 62701]
-    """
     if not text:
         return []
 
     matches = re.findall(r"\$\s*([\d\.]+),\d{2}", text)
-    prices = []
+    prices: list[int] = []
 
     for value in matches:
         parsed = clean_price(value.replace(".", ""))
@@ -55,10 +56,6 @@ def extract_all_prices(text: str | None) -> list[int]:
 
 
 def extract_product_id(url: str) -> int | None:
-    """
-    Extrae el id desde URLs tipo:
-    /prod/30581/placa-de-video...
-    """
     if not url:
         return None
 
@@ -69,10 +66,19 @@ def extract_product_id(url: str) -> int | None:
     return clean_price(match.group(1))
 
 
+def slugify_title(value: str) -> str:
+    normalized = normalize_name(value or "")
+    return normalized.replace(" ", "-")
+
+
+def build_product_url(external_id: int, title: str, fallback_url: str | None = None) -> str:
+    if fallback_url and "/prod/" in fallback_url:
+        return urljoin(FULLH4RD_BASE_URL, fallback_url)
+
+    return f"{FULLH4RD_BASE_URL}/prod/{external_id}/{slugify_title(title)}"
+
+
 def looks_like_product(url: str, text: str) -> bool:
-    """
-    Filtra anchors que realmente sean productos.
-    """
     if not url or "/prod/" not in url:
         return False
 
@@ -84,37 +90,11 @@ def looks_like_product(url: str, text: str) -> bool:
 
     return True
 
-def get_product_image(product_url: str) -> str | None:
-    try:
-        response = requests.get(product_url, headers=HEADERS, timeout=15)
-        response.raise_for_status()
-        response.encoding = "utf-8"
-
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        # buscar imágenes que contengan "productos"
-        imgs = soup.find_all("img")
-
-        for img in imgs:
-            src = img.get("src", "")
-
-            if "productos" in src or "product" in src:
-                return src
-
-        return None
-
-    except Exception as e:
-        print(f"[IMAGE ERROR] {product_url} -> {e}")
-        return None
 
 def clean_title_from_card_text(text: str) -> str:
-    """
-    Toma el texto completo del card y deja solo el nombre.
-    """
     if not text:
         return ""
 
-    # cortar en el primer precio
     text = re.split(r"\$\s*[\d\.]+,\d{2}", text, maxsplit=1)[0]
 
     garbage_words = [
@@ -131,11 +111,100 @@ def clean_title_from_card_text(text: str) -> str:
     return clean_text(text)
 
 
+def infer_category_from_title(title: str) -> str:
+    normalized_title = normalize_name(title or "")
+
+    for category, keywords in TITLE_CATEGORY_RULES:
+        if any(keyword in normalized_title for keyword in keywords):
+            return category
+
+    return "sin identificar"
+
+
+def parse_ld_json_product(soup: BeautifulSoup) -> dict:
+    for script in soup.find_all("script", attrs={"type": "application/ld+json"}):
+        raw_json = script.string or script.get_text(strip=True)
+        if not raw_json:
+            continue
+
+        try:
+            parsed = json.loads(raw_json)
+        except json.JSONDecodeError:
+            continue
+
+        if isinstance(parsed, dict) and parsed.get("@type") == "Product":
+            return parsed
+
+    return {}
+
+
+def extract_web_stock(soup: BeautifulSoup) -> int:
+    stock_container = soup.select_one(".stock-container")
+    if not stock_container:
+        return 0
+
+    virtual_stock = stock_container.find(string=re.compile(r"stock .* web", re.IGNORECASE))
+    if not virtual_stock:
+        return 0
+
+    stock_block = virtual_stock.find_parent("div")
+    if not stock_block:
+        return 0
+
+    classes = stock_block.get("class", [])
+    if "available" in classes:
+        return 1
+    if "no-stock" in classes:
+        return 0
+
+    stock_text = clean_text(stock_block.get_text(" ", strip=True)).lower()
+    return 0 if "sin stock" in stock_text else 1
+
+
+@lru_cache(maxsize=2048)
+def get_product_details(product_url: str, title_hint: str) -> dict:
+    details = {
+        "category": infer_category_from_title(title_hint),
+        "stock": 0,
+        "marca": None,
+        "image": None,
+    }
+
+    try:
+        response = requests.get(product_url, headers=HEADERS, timeout=20)
+        response.raise_for_status()
+        response.encoding = "utf-8"
+    except Exception as error:
+        print(f"[FULLH4RD DETAIL ERROR] {product_url} -> {error}")
+        return details
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    product_data = parse_ld_json_product(soup)
+
+    category = clean_text(product_data.get("category"))
+    if category:
+        details["category"] = category
+
+    brand = product_data.get("brand")
+    if isinstance(brand, dict):
+        brand = brand.get("name")
+    details["marca"] = clean_text(brand)
+
+    image = product_data.get("image")
+    if isinstance(image, list):
+        image = image[0] if image else None
+    if image:
+        details["image"] = urljoin(FULLH4RD_BASE_URL, image)
+
+    details["stock"] = extract_web_stock(soup)
+    return details
+
+
 def get_full_h4rd_products() -> list[dict]:
     products = []
 
     response = requests.get(
-        FULLH4RD_AURICULARES_URL,
+        FULLH4RD_PERIFERICOS_URL,
         headers=HEADERS,
         timeout=20,
     )
@@ -143,16 +212,12 @@ def get_full_h4rd_products() -> list[dict]:
     response.encoding = "utf-8"
 
     soup = BeautifulSoup(response.text, "html.parser")
+    seen_ids: set[int] = set()
 
-    seen_ids = set()
-
-    # Recorremos todos los enlaces y nos quedamos con los que apunten a /prod/
-    for a in soup.find_all("a", href=True):
-        href = a.get("href", "").strip()
+    for anchor in soup.find_all("a", href=True):
+        href = anchor.get("href", "").strip()
         full_url = urljoin(FULLH4RD_BASE_URL, href)
-        #image = get_product_image(full_url)
-        
-        raw_text = clean_text(a.get_text(" ", strip=True))
+        raw_text = clean_text(anchor.get_text(" ", strip=True))
 
         if not looks_like_product(full_url, raw_text):
             continue
@@ -161,13 +226,15 @@ def get_full_h4rd_products() -> list[dict]:
         if external_id is None or external_id in seen_ids:
             continue
 
-        seen_ids.add(external_id)
-
         prices = extract_all_prices(raw_text)
         price = prices[0] if len(prices) >= 1 else None
         price_list = prices[1] if len(prices) >= 2 else None
-
         title = clean_title_from_card_text(raw_text)
+        if not title:
+            continue
+
+        product_url = build_product_url(external_id, title, full_url)
+        details = get_product_details(product_url, title)
 
         product = {
             "store": STORE_NAME,
@@ -176,15 +243,14 @@ def get_full_h4rd_products() -> list[dict]:
             "normalized_title": normalize_name(title),
             "price": price,
             "price_list": price_list,
-            "stock": 0,  # en listado no queda claro el stock exacto
-            "category": "auriculares",
-            "marca": None,
-            "url": full_url,
-            "image": None,
+            "stock": details["stock"],
+            "category": details["category"],
+            "marca": details["marca"],
+            "url": product_url,
+            "image": details["image"],
         }
 
-        # seguridad mínima para no guardar basura
-        if product["title"] and product["url"] and product["id"] is not None:
-            products.append(product)
+        seen_ids.add(external_id)
+        products.append(product)
 
     return products

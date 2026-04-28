@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Product } from "@/types/store";
 
 export function ProductGrid({ products }: { products: Product[] }) {
@@ -42,13 +43,18 @@ export function ProductGrid({ products }: { products: Product[] }) {
             </div>
 
             {/* Imagen */}
-            <div className="relative aspect-square overflow-hidden border-b border-slate-100 bg-slate-50 p-8 grayscale-[0.2] transition-all duration-500 group-hover:grayscale-0">
+            <div className="relative aspect-square overflow-hidden border-b border-slate-100 bg-slate-50 grayscale-[0.2] transition-all duration-500 group-hover:grayscale-0">
               {product.image ? (
-                <img
-                  alt={product.name}
-                  src={product.image}
-                  className="h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
-                />
+                <div className="relative h-full w-full p-3">
+                  <Image
+                    alt={product.name}
+                    src={product.image}
+                    fill
+                    unoptimized
+                    sizes="(max-width: 640px) 50vw, (max-width: 1536px) 33vw, 25vw"
+                    className="object-contain object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                </div>
               ) : (
                 <div className="flex h-full w-full items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-white text-slate-300 transition-transform duration-700 ease-out group-hover:scale-105">
                   <span className="material-symbols-outlined text-[72px]">
@@ -60,8 +66,8 @@ export function ProductGrid({ products }: { products: Product[] }) {
             </div>
 
             {/* Contenido */}
-            <div className="flex flex-1 flex-col p-6">
-              <div className="mb-4 flex items-center gap-2">
+            <div className="flex flex-1 flex-col p-4">
+              <div className="mb-3 flex items-center gap-2">
                 <span className="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-blue-500 transition-colors">
                   storefront
                 </span>
@@ -70,29 +76,34 @@ export function ProductGrid({ products }: { products: Product[] }) {
                 </span>
               </div>
 
-              <h3 className="mb-6 line-clamp-2 min-h-[3rem] font-headline text-lg font-bold leading-tight tracking-tight text-slate-900 transition-colors group-hover:text-blue-600">
+              <h3 className="mb-4 line-clamp-2 min-h-[2.75rem] font-headline text-base font-bold leading-tight tracking-tight text-slate-900 transition-colors group-hover:text-blue-600">
                 {product.name}
               </h3>
 
-              <div className="mt-auto flex items-end justify-between gap-4 border-t border-slate-100 pt-5">
+              <div className="mt-auto flex items-end justify-between gap-3 border-t border-slate-100 pt-4">
                 <div className="flex flex-col">
                   <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                    Precio Final
+                    Precio Efectivo
                   </span>
                   <div className="flex items-baseline gap-1">
                     <span className="text-sm font-black text-blue-600">$</span>
-                    <span className="font-headline text-2xl font-black tracking-tighter text-slate-900">
+                    <span className="font-headline text-xl font-black tracking-tighter text-slate-900">
                       {product.price.toLocaleString("es-AR")}
                     </span>
                   </div>
                 </div>
 
-                <div className="relative z-30 mb-1 flex items-center gap-1 text-xs font-bold text-blue-600">
+                <a
+                  href={product.url ?? "#"}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="relative z-30 mb-1 flex items-center gap-1 text-[11px] font-bold text-blue-600"
+                >
                   <span>Ir a tienda</span>
                   <span className="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">
                     arrow_right_alt
                   </span>
-                </div>
+                </a>
               </div>
             </div>
           </article>

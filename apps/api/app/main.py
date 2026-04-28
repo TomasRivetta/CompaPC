@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 import os
 from dotenv import load_dotenv
@@ -13,6 +13,77 @@ from app.db.models import Category, ProductOffer
 from app.db.session import SessionLocal
 
 load_dotenv()
+
+CANONICAL_CATEGORY_KEYWORDS: dict[str, list[str]] = {
+    "procesadores-amd": ["procesadores amd", "ryzen"],
+    "procesadores-intel": ["procesadores intel", "core i", "intel cpu"],
+    "mothers-amd": ["mothers amd", "mother amd"],
+    "mothers-intel": ["mothers intel", "mother intel"],
+    "memorias": ["memorias", "ram", "ddr4", "ddr5"],
+    "placas-de-video-geforce": ["placas de video geforce", "geforce", "rtx", "gtx"],
+    "placas-de-video-radeon-amd": ["placas de video radeon amd", "radeon amd", "radeon"],
+    "placas-de-video-intel-arc": ["placas de video intel arc", "intel arc", "arc"],
+    "discos-solidos-ssd": ["ssd", "discos solidos ssd", "nvme", "m.2"],
+    "discos-externos": ["discos externos", "disco externo"],
+    "fuentes-de-alimentacion": ["fuentes de alimentacion", "fuente", "psu"],
+    "gabinetes": ["gabinetes", "gabinete"],
+    "coolers-cpu": ["coolers cpu", "cpu cooler"],
+    "coolers-fan": ["coolers fan", "fans", "fan"],
+    "pasta-termica": ["pasta termica"],
+    "teclados": ["teclados", "teclado usb"],
+    "mouses": ["mouses", "mouse gamer", "mouse inalambrico", "mouse optico usb"],
+    "mouse-pads": ["mouse pads", "mouse pad"],
+    "auriculares": ["auriculares"],
+    "microfonos": ["microfonos", "microfono"],
+    "webcam": ["webcam"],
+    "joysticks": ["joysticks"],
+    "stream-deck": ["stream deck"],
+    "parlantes": ["parlantes", "parlantes 2.0", "parlantes portatiles"],
+    "teclado-y-mouse": ["teclado y mouse"],
+    "notebooks": ["notebooks", "notebook", "laptops", "ultrabooks"],
+    "pc-de-escritorio": ["pc de escritorio", "equipos armados", "mini pcs", "armados"],
+    "consolas": ["consolas"],
+    "cables-y-adaptadores": ["cables", "adaptadores"],
+    "routers-wifi": ["routers", "wifi", "conectividad", "red", "router hogar", "access point", "antenas"],
+    "kits-de-actualizacion": ["kits de actualizacion"],
+    "combos-de-teclados-mouses-y-otros": ["combos de teclados", "combos de mouses", "combos", "teclado y mouse"],
+    "modding-cables-iluminacion-y-otros": ["modding", "iluminacion"],
+    "estabilizadores": ["estabilizadores"],
+    "ups": ["ups"],
+    "volantes-simuladores-de-manejo": ["volantes", "simuladores de manejo"],
+    "sillas-gamers": ["sillas", "sillas gamers"],
+    "monitores": ["monitores y pantallas", "monitores", "pantallas"],
+    "televisores": ["televisores", "tv"],
+    "proyectores": ["proyectores"],
+    "capturadoras-y-sintonizadoras-de-tv": ["capturadoras", "sintonizadoras de tv"],
+    "impresoras-y-multifunciones": ["impresoras", "impresoras laser", "impresoras multifuncion", "impresoras y multifunciones"],
+    "plotter": ["plotter"],
+    "escaner": ["escaner", "scanner"],
+    "toners": ["toners", "toner"],
+    "accesorios-de-celulares": ["celulares", "smartwatch", "tablet"],
+    "robots": ["robots"],
+    "general": ["general"],
+    "sin-identificar": ["sin identificar"],
+}
+
+
+def build_canonical_category_filter(canonical_slug: str):
+    keywords = CANONICAL_CATEGORY_KEYWORDS.get(canonical_slug, [])
+    if not keywords:
+        return None
+
+    expressions = []
+    for keyword in keywords:
+        lowered_keyword = keyword.lower()
+        expressions.extend(
+            [
+                func.lower(func.coalesce(Category.name, "")).contains(lowered_keyword),
+                func.lower(func.coalesce(Category.slug, "")).contains(lowered_keyword.replace(" ", "-")),
+                func.lower(func.coalesce(ProductOffer.category, "")).contains(lowered_keyword),
+            ]
+        )
+
+    return or_(*expressions)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -50,9 +121,11 @@ def health():
 def list_offers(
     db: Annotated[Session, Depends(get_db)],
     limit: Annotated[int, Query(ge=1, le=5000)] = 50,
+    offset: Annotated[int, Query(ge=0)] = 0,
     store: str | None = None,
     category: str | None = None,
     category_slug: str | None = None,
+    canonical_category_slug: str | None = None,
 ):
     query = (
         select(ProductOffer, Category.slug, Category.name, Category.external_id)
@@ -69,7 +142,12 @@ def list_offers(
     if category_slug:
         query = query.where(Category.slug == category_slug)
 
-    offers = db.execute(query.limit(limit)).all()
+    if canonical_category_slug:
+        canonical_filter = build_canonical_category_filter(canonical_category_slug)
+        if canonical_filter is not None:
+            query = query.where(canonical_filter)
+
+    offers = db.execute(query.offset(offset).limit(limit)).all()
 
     return [
         {

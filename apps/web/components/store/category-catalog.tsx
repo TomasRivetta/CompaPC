@@ -82,6 +82,16 @@ export function CategoryCatalog({
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  const visiblePageCount = 5;
+  const paginationStart = Math.max(
+    1,
+    Math.min(currentPage - Math.floor(visiblePageCount / 2), totalPages - visiblePageCount + 1)
+  );
+  const paginationEnd = Math.min(totalPages, paginationStart + visiblePageCount - 1);
+  const visiblePages = Array.from(
+    { length: paginationEnd - paginationStart + 1 },
+    (_, index) => paginationStart + index
+  );
 
   function handleToggleBrand(brand: string) {
     setPage(1);
@@ -176,19 +186,32 @@ export function CategoryCatalog({
             <div className="flex items-center justify-center gap-2 pt-8">
               <button
                 onClick={() => setPage((current) => Math.max(1, current - 1))}
-                disabled={page === 1}
+                disabled={currentPage === 1}
                 className="flex h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 text-sm font-bold text-slate-700 transition-all hover:border-blue-200 hover:bg-slate-50 disabled:opacity-40"
               >
                 Anterior
               </button>
               
               <div className="flex items-center gap-2">
-                {Array.from({ length: totalPages }, (_, index) => index + 1).map((item) => (
+                {paginationStart > 1 ? (
+                  <>
+                    <button
+                      onClick={() => setPage(1)}
+                      className="h-12 w-12 rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-600 transition-all hover:border-blue-200 hover:bg-slate-50"
+                    >
+                      1
+                    </button>
+                    {paginationStart > 2 ? (
+                      <span className="px-1 text-sm font-bold text-slate-300">...</span>
+                    ) : null}
+                  </>
+                ) : null}
+                {visiblePages.map((item) => (
                   <button
                     key={item}
                     onClick={() => setPage(item)}
                     className={`h-12 w-12 rounded-2xl text-sm font-bold transition-all ${
-                      item === page
+                      item === currentPage
                         ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
                         : "border border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:bg-slate-50"
                     }`}
@@ -196,11 +219,24 @@ export function CategoryCatalog({
                     {item}
                   </button>
                 ))}
+                {paginationEnd < totalPages ? (
+                  <>
+                    {paginationEnd < totalPages - 1 ? (
+                      <span className="px-1 text-sm font-bold text-slate-300">...</span>
+                    ) : null}
+                    <button
+                      onClick={() => setPage(totalPages)}
+                      className="h-12 w-12 rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-600 transition-all hover:border-blue-200 hover:bg-slate-50"
+                    >
+                      {totalPages}
+                    </button>
+                  </>
+                ) : null}
               </div>
 
               <button
                 onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
-                disabled={page === totalPages}
+                disabled={currentPage === totalPages}
                 className="flex h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 text-sm font-bold text-slate-700 transition-all hover:border-blue-200 hover:bg-slate-50 disabled:opacity-40"
               >
                 Siguiente

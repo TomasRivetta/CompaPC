@@ -2,20 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
-import { getCategories } from "@/lib/api";
+import { FormEvent, useState } from "react";
 import { Category } from "@/types/store";
 
-export function Navbar() {
+export function Navbar({ categories }: { categories: Category[] }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    getCategories()
-      .then(setCategories)
-      .catch(() => setCategories([]));
-  }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

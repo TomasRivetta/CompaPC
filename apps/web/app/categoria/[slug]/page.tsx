@@ -9,14 +9,15 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const categories = await getCategories();
+  const [categories, products] = await Promise.all([
+    getCategories(),
+    getProductsByCategoryFromApi(slug),
+  ]);
   const category = getCategoryBySlug(categories, slug);
 
   if (!category) {
     notFound();
   }
-
-  const products = await getProductsByCategoryFromApi(category.slug);
 
   return <CategoryCatalog category={category} categories={categories} products={products} />;
 }

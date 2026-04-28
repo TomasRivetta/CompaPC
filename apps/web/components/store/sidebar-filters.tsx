@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { groupCategories } from "@/lib/store-utils";
 import { Category } from "@/types/store";
 
 interface SidebarFiltersProps {
@@ -31,12 +32,20 @@ export function SidebarFilters({
   inStockOnly,
   onToggleStock,
 }: SidebarFiltersProps) {
+  const groupedCategories = groupCategories(categories);
+  const defaultOpenGroup =
+    groupedCategories.find((group) =>
+      group.categories.some((category) => category.slug === activeCategory)
+    )?.name ??
+    groupedCategories[0]?.name ??
+    null;
   const [openSections, setOpenSections] = useState({
     category: true,
     brands: true,
     price: true,
     stock: true,
   });
+  const [openCategoryGroup, setOpenCategoryGroup] = useState<string | null>(defaultOpenGroup);
 
   function toggleSection(section: "category" | "brands" | "price" | "stock") {
     setOpenSections((current) => ({
@@ -72,43 +81,76 @@ export function SidebarFilters({
         </button>
 
         {openSections.category && (
-          <div className="mt-4 space-y-2">
-            {categories.map((category) => {
-              const isActive = activeCategory === category.slug;
-
-              return (
-                <Link
-                  key={category.slug}
-                  href={`/categoria/${category.slug}`}
-                  onClick={() => onClose?.()}
-                  className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
-                    isActive
-                      ? "border border-blue-100 bg-blue-50 text-blue-700 shadow-sm"
-                      : "text-slate-700 hover:bg-slate-50"
+          <div className="mt-4 space-y-5">
+            {groupedCategories.map((group) => (
+              <div key={group.name} className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setOpenCategoryGroup((current) => (current === group.name ? null : group.name))
+                  }
+                  className="flex w-full items-center justify-between gap-3 px-1 text-left transition-colors hover:text-slate-600"
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14rem] text-slate-400">
+                    {group.order + 1}. {group.name}
+                  </p>
+                  <span
+                    className={`material-symbols-outlined text-[18px] text-slate-400 transition-transform duration-300 ${
+                      openCategoryGroup === group.name ? "rotate-180" : ""
+                    }`}
+                  >
+                    {openCategoryGroup === group.name ? "expand_less" : "expand_more"}
+                  </span>
+                </button>
+                <div
+                  className={`grid overflow-hidden transition-all duration-300 ease-out ${
+                    openCategoryGroup === group.name
+                      ? "grid-rows-[1fr] opacity-100"
+                      : "grid-rows-[0fr] opacity-0"
                   }`}
                 >
-                  <span
-                    className={`material-symbols-outlined text-[20px] ${
-                      isActive ? "text-blue-600" : "text-slate-400"
-                    }`}
-                  >
-                    {category.icon}
-                  </span>
+                  <div className="min-h-0">
+                    {group.categories.map((category) => {
+                      const isActive = activeCategory === category.slug;
 
-                  <span
-                    className={`text-sm ${
-                      isActive ? "font-semibold" : "font-medium"
-                    }`}
-                  >
-                    {category.name}
-                  </span>
+                      return (
+                      <Link
+                        key={category.slug}
+                        href={`/categoria/${category.slug}`}
+                        onClick={() => onClose?.()}
+                        className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
+                          isActive
+                            ? "border border-blue-100 bg-blue-50 text-blue-700 shadow-sm"
+                            : "text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        <span
+                          className={`material-symbols-outlined text-[20px] ${
+                            isActive ? "text-blue-600" : "text-slate-400"
+                          }`}
+                        >
+                          {category.icon}
+                        </span>
 
-                  {isActive && (
-                    <span className="ml-auto h-2.5 w-2.5 rounded-full bg-blue-600" />
-                  )}
-                </Link>
-              );
-            })}
+                        <span
+                          className={`text-sm ${
+                            isActive ? "font-semibold" : "font-medium"
+                          }`}
+                        >
+                          {category.name}
+                        </span>
+
+                        {isActive && (
+                          <span className="ml-auto h-2.5 w-2.5 rounded-full bg-blue-600" />
+                        )}
+                      </Link>
+                      );
+                    })
+                    }
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </section>

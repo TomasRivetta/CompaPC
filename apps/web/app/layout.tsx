@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/store/footer";
 import { Navbar } from "@/components/store/navbar";
+import { getCategories } from "@/lib/api";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -8,11 +9,13 @@ export const metadata: Metadata = {
   description: "Catalogo de hardware con busqueda, categorias y filtros",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const categories = await getCategories().catch(() => []);
+
   return (
     <html lang="es">
       <head>
@@ -29,7 +32,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <div className="site-shell">
-          <Navbar />
+          <Navbar categories={categories} />
           <main className="page-wrap">{children}</main>
           <Footer />
         </div>
