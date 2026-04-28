@@ -23,7 +23,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
@@ -37,13 +37,13 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-900/5">
       {/* Badges */}
-      <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between p-4">
-        <span className="rounded-full border border-slate-200 bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-800 backdrop-blur-sm shadow-sm">
+      <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-2 p-3 sm:p-4">
+        <span className="max-w-[48%] truncate rounded-full border border-slate-200 bg-white/90 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-800 backdrop-blur-sm shadow-sm sm:max-w-none sm:px-2.5 sm:text-[10px]">
           {product.store ?? product.brand}
         </span>
 
         <span
-          className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm ${
+          className={`shrink-0 rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-wider shadow-sm sm:px-2.5 sm:text-[10px] ${
             product.inStock
               ? "border-emerald-200 bg-emerald-50 text-emerald-700"
               : "border-rose-200 bg-rose-50 text-rose-700"
@@ -62,7 +62,7 @@ function ProductCard({ product }: { product: Product }) {
         aria-label={`Ver ${product.name}`}
       >
         {product.image ? (
-          <div className="relative h-full w-full p-6">
+          <div className="relative h-full w-full p-3.5 sm:p-6">
             <Image
               alt={product.name}
               src={product.image}
@@ -81,22 +81,22 @@ function ProductCard({ product }: { product: Product }) {
       </a>
 
       {/* Contenido */}
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-3.5 sm:p-5">
         <div className="mb-2 flex items-center gap-1.5 text-slate-400">
           <span className="material-symbols-outlined text-base">storefront</span>
           <span className="text-[10px] font-bold uppercase tracking-widest">{product.brand}</span>
         </div>
 
-        <h3 className="mb-4 line-clamp-2 min-h-[2.5rem] text-sm font-bold leading-snug text-slate-800 transition-colors group-hover:text-blue-600">
+        <h3 className="mb-3 line-clamp-2 min-h-[2.4rem] text-[13px] font-bold leading-snug text-slate-800 transition-colors group-hover:text-blue-600 sm:mb-4 sm:text-sm">
           {product.name}
         </h3>
 
-        <div className="mt-auto flex items-end justify-between border-t border-slate-100 pt-4">
+        <div className="mt-auto flex items-end justify-between gap-3 border-t border-slate-100 pt-3 sm:pt-4">
           <div className="space-y-0.5">
             <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">
               Precio Efectivo
             </span>
-            <div className="text-xl font-black tracking-tight text-slate-900">
+            <div className="text-base font-black tracking-tight text-slate-900 sm:text-xl">
               {formatPrice(product.price)}
             </div>
           </div>
@@ -105,7 +105,7 @@ function ProductCard({ product }: { product: Product }) {
             href={productUrl}
             target="_blank"
             rel="noreferrer"
-            className="relative z-20 flex items-center gap-1 text-[11px] font-bold text-blue-600 transition-transform group-hover:translate-x-1"
+            className="relative z-20 flex shrink-0 items-center gap-1 text-[10px] font-bold text-blue-600 transition-transform group-hover:translate-x-1 sm:text-[11px]"
           >
             <span>Tienda</span>
             <span className="material-symbols-outlined text-sm">arrow_forward</span>

@@ -54,7 +54,13 @@ button {
 
 @media (max-width: 768px) {
   :root {
-    --site-pad: 20px;
+    --site-pad: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --site-pad: 12px;
   }
 }
 
@@ -118,8 +124,15 @@ button {
 
 @media (max-width: 768px) {
   .page-wrap {
-    padding-top: 32px;
-    padding-bottom: 60px;
+    padding-top: 24px;
+    padding-bottom: 48px;
+  }
+}
+
+@media (max-width: 420px) {
+  .page-wrap {
+    padding-top: 20px;
+    padding-bottom: 40px;
   }
 }
 

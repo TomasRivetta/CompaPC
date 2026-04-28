@@ -103,10 +103,10 @@ export function CategoryCatalog({
   }
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-6 sm:gap-10">
 
       {/* Main Content Layout */}
-      <section className="grid gap-12 lg:grid-cols-[300px_1fr]">
+      <section className="grid gap-6 lg:grid-cols-[300px_1fr] lg:gap-12">
         <aside
           className={`fixed inset-0 z-[60] flex flex-col bg-white lg:static lg:z-0 lg:bg-transparent transition-transform duration-300 ${
             filtersOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
@@ -146,25 +146,35 @@ export function CategoryCatalog({
 
         <div className="space-y-10">
           {/* Toolbar */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-4 border-b border-slate-200 pb-4 sm:flex sm:items-center sm:justify-between sm:space-y-0">
+              <div className="flex items-center justify-between gap-3">
                 <span className="text-sm text-slate-500">
                   {filteredProducts.length} resultados
                 </span>
+                <button
+                  type="button"
+                  onClick={() => setFiltersOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-bold uppercase tracking-[0.1em] text-slate-700 shadow-sm lg:hidden"
+                >
+                  <span className="material-symbols-outlined text-[18px]">tune</span>
+                  Filtros
+                </button>
+              </div>
 
-              <div className="flex items-center gap-3">
-                <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+              <div className="flex items-center justify-between gap-3 sm:justify-end">
+                <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400 sm:text-[11px] sm:tracking-[0.14em]">
                   Ordenar
                 </span>
 
-                <div className="relative">
+                <div className="relative min-w-0 flex-1 sm:flex-none">
                   <select
                     value={sortBy}
                     onChange={(event) => {
                       setSortBy(event.target.value);
                       setPage(1);
                     }}
-                    className="h-10 appearance-none border border-slate-200 bg-white pl-3 pr-8 text-sm font-medium text-slate-700 transition-all outline-none hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+                    className="h-10 w-full appearance-none border border-slate-200 bg-white pl-3 pr-8 text-sm font-medium text-slate-700 transition-all outline-none hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 sm:w-auto"
                   >
                     <option value="price-low">Menor precio</option>
                     <option value="price-high">Mayor precio</option>
@@ -183,21 +193,21 @@ export function CategoryCatalog({
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 pt-8">
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-6 sm:pt-8">
               <button
                 onClick={() => setPage((current) => Math.max(1, current - 1))}
                 disabled={currentPage === 1}
-                className="flex h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 text-sm font-bold text-slate-700 transition-all hover:border-blue-200 hover:bg-slate-50 disabled:opacity-40"
+                className="flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition-all hover:border-blue-200 hover:bg-slate-50 disabled:opacity-40 sm:h-12 sm:px-6"
               >
                 Anterior
               </button>
               
-              <div className="flex items-center gap-2">
+              <div className="flex max-w-full items-center gap-2 overflow-x-auto pb-1">
                 {paginationStart > 1 ? (
                   <>
                     <button
                       onClick={() => setPage(1)}
-                      className="h-12 w-12 rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-600 transition-all hover:border-blue-200 hover:bg-slate-50"
+                      className="h-11 w-11 shrink-0 rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-600 transition-all hover:border-blue-200 hover:bg-slate-50 sm:h-12 sm:w-12"
                     >
                       1
                     </button>
@@ -210,7 +220,7 @@ export function CategoryCatalog({
                   <button
                     key={item}
                     onClick={() => setPage(item)}
-                    className={`h-12 w-12 rounded-2xl text-sm font-bold transition-all ${
+                    className={`h-11 w-11 shrink-0 rounded-2xl text-sm font-bold transition-all sm:h-12 sm:w-12 ${
                       item === currentPage
                         ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
                         : "border border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:bg-slate-50"
@@ -226,7 +236,7 @@ export function CategoryCatalog({
                     ) : null}
                     <button
                       onClick={() => setPage(totalPages)}
-                      className="h-12 w-12 rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-600 transition-all hover:border-blue-200 hover:bg-slate-50"
+                      className="h-11 w-11 shrink-0 rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-600 transition-all hover:border-blue-200 hover:bg-slate-50 sm:h-12 sm:w-12"
                     >
                       {totalPages}
                     </button>
@@ -237,7 +247,7 @@ export function CategoryCatalog({
               <button
                 onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
                 disabled={currentPage === totalPages}
-                className="flex h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 text-sm font-bold text-slate-700 transition-all hover:border-blue-200 hover:bg-slate-50 disabled:opacity-40"
+                className="flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition-all hover:border-blue-200 hover:bg-slate-50 disabled:opacity-40 sm:h-12 sm:px-6"
               >
                 Siguiente
               </button>

@@ -5,13 +5,13 @@ export function Footer() {
 
   return (
     <footer className="w-full border-t border-slate-200 bg-white/80 backdrop-blur-md">
-      <div className="container-standard mx-auto px-4 py-12">
+      <div className="container-standard mx-auto px-4 py-10 sm:py-12">
         
         {/* Top Section */}
-        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           
           {/* Branding */}
-          <div className="flex max-w-sm flex-col gap-5">
+          <div className="flex max-w-sm flex-col gap-4 sm:gap-5">
             <a href="/" className="group inline-flex w-fit items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/20 transition-transform group-hover:scale-105">
                 <span className="material-symbols-outlined" aria-hidden="true">
@@ -33,9 +33,9 @@ export function Footer() {
           </div>
 
           {/* Legal */}
-          <div className="flex max-w-md flex-col gap-4 md:items-end">
+          <div className="flex max-w-md flex-col gap-3 sm:gap-4 md:items-end">
             <p className="font-semibold text-slate-900">Aviso Legal</p>
-            <div className="rounded-xl bg-slate-50 p-4 text-xs leading-relaxed text-slate-500 ring-1 ring-slate-200/60 md:text-right">
+            <div className="rounded-xl bg-slate-50 p-3 text-xs leading-relaxed text-slate-500 ring-1 ring-slate-200/60 sm:p-4 md:text-right">
               CompaPC actúa únicamente como comparador de precios. No comercializamos productos ni garantizamos la exactitud, stock o disponibilidad de los precios publicados, los cuales dependen exclusivamente de tiendas de terceros.
             </div>
           </div>
@@ -43,7 +43,7 @@ export function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="my-10 h-px w-full bg-slate-200" />
+        <div className="my-8 h-px w-full bg-slate-200 sm:my-10" />
 
         {/* Bottom Section */}
         <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:justify-between">
